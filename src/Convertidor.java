@@ -5,8 +5,8 @@ package src;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ToJerarquia{
-    public LExpression tojera(List<String> tokens){
+public class Convertidor{
+    public LExpression convertidor(List<String> tokens){
         if(tokens.isEmpty()){
             throw new IllegalArgumentException("No se puede analizar porque esta vacia");
         }
@@ -15,7 +15,7 @@ public class ToJerarquia{
         if(primero.equals("()")){
             List<LExpression> expresiones = new ArrayList<LExpression>();
             while(!tokens.isEmpty() && !tokens.get(0).equals(")")){
-                expresiones.add(tojera(tokens));
+                expresiones.add(convertidor(tokens));
             }
             if(!tokens.isEmpty()){
                 tokens.remove(0);
