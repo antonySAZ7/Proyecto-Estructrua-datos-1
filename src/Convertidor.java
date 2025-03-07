@@ -12,7 +12,7 @@ public class Convertidor{
         }
 
         String primero = tokens.remove(0);
-        if(primero.equals("()")){
+        if(primero.equals("(")){
             List<LExpression> expresiones = new ArrayList<LExpression>();
             while(!tokens.isEmpty() && !tokens.get(0).equals(")")){
                 expresiones.add(convertidor(tokens));
