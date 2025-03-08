@@ -2,7 +2,7 @@ package src;
 
 
 
-abstract class LExpression {
+public  abstract class LExpression {
     
     
 }

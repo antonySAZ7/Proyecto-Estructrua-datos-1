@@ -13,16 +13,20 @@ public class Convertidor{
 
         String primero = tokens.remove(0);
         if(primero.equals("(")){
-            List<LExpression> expresiones = new ArrayList<LExpression>();
+            List<LExpression> expresiones = new ArrayList<>();
             while(!tokens.isEmpty() && !tokens.get(0).equals(")")){
                 expresiones.add(convertidor(tokens));
             }
-            if(!tokens.isEmpty()){
-                tokens.remove(0);
+            if(tokens.isEmpty()){
+                throw new IllegalArgumentException("Error en la sintaxis, posiblemente falte un ')'");
             }
+            tokens.remove(0);
             return new LList(expresiones);
 
-        }else if(primero.matches("-?\\d+(\\.\\d+)?")){
+        }else if(primero.equals(")")){
+            throw new IllegalArgumentException("Error de sintaxis, parentesis de cierre inesperado, el cual por la sintaxis no deberia estar");
+        }
+        else if(primero.matches("-?\\d+(\\.\\d+)?")){
             return new LNumber(Double.parseDouble(primero));
         }else {
             return new LSymbol(primero);

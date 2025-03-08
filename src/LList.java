@@ -1,8 +1,8 @@
 package src;
 
 
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LList extends LExpression {
     private final List<LExpression> lista;
@@ -17,6 +17,11 @@ public class LList extends LExpression {
     
     public List<String> getlistaString() {
         return lista.stream().map(Object::toString).collect(Collectors.toList());
+    }
+    
+    @Override 
+    public String toString() {
+        return "(" + lista.stream().map(Object::toString).collect(Collectors.joining(" ")) + ")";
     }
 }
 
