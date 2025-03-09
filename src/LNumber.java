@@ -11,4 +11,8 @@ public class LNumber extends LExpression {
         return valor;
     }
     
+@Override
+    public String toString() {
+        return Double.toString(valor);
+}
 }

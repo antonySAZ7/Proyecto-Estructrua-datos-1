@@ -11,7 +11,9 @@ public class LSymbol extends LExpression {
         return simbolo;
     }
 
-    
-
-    
+@Override
+    public String toString() {
+        return simbolo;
+    }
+ 
 }
