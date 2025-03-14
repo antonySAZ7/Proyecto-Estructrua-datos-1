@@ -13,7 +13,6 @@ public class Evaluator {
         }
     
 
-
 /**
 * Evalúa una lista de expresiones LISP
 * Una lista en LISP puede representar una función o expresiones como QUOTE o COND o una lista de elementos
@@ -32,16 +31,15 @@ private Object evaluateList(LList lista) {
         String operador = ((LSymbol) primerElemento).getSimbolo();
         switch (operador) {
             case "QUOTE":
-                //mas adelanteeee
-                break;
+                return elementos.get(1);
             case "DEFUN":
-                break;
+                return definirFuncion(elementos);
             case "SETQ":
-                break;
+                return asignarVariable(elementos);
             case "COND":
-               break;
+                return evaluarCondicional(elementos);
             case "IF":
-                break;
+                return evaluarIf(elementos);
             default:
                 throw new RuntimeException("Este operador no se reconoce: " + operador);
         }
@@ -74,4 +72,84 @@ private Object evaluateList(LList lista) {
         throw new RuntimeException("expresió no válida: " + expression);
     }
 
+
+/**
+* Define una nueva función en el diccionario
+*
+* @param elementos La lista de elementos que define la función con su nombre, parámetros y cuerpo
+* @return El nombre de la función definida
+* @throws RuntimeException Si la sintaxis de DEFUN es incorrecta
+*/
+    private Object definirFuncion(List<LExpression> elementos) {
+        if (elementos.size() < 4) {
+            throw new RuntimeException("Sintaxis incorrecta para DEFUN");
+        }
+        String nombreFuncion = ((LSymbol) elementos.get(1)).getSimbolo();
+        List<String> parametros = ((LList) elementos.get(2)).getlistaString();
+        LExpression cuerpo = elementos.get(3);
+        LFuncion funcion = new LFuncion(parametros, cuerpo);
+        diccionario.setFuncion(nombreFuncion, funcion);
+        return nombreFuncion;
+    }
+
+
+/**
+* Asigna un valor a una variable en el diccionario
+*
+* @param elementos La lista de elementos (nombre de la variable y valor)
+* @return El valor asignado
+* @throws RuntimeException Si la sintaxis de SETQ está mal
+*/
+    private Object asignarVariable(List<LExpression> elementos) {
+        if (elementos.size() != 3) {
+            throw new RuntimeException("Sintaxis incorrecta para SETQ");
+        }
+        String nombreVariable = ((LSymbol) elementos.get(1)).getSimbolo();
+        Object valor = evaluate(elementos.get(2));
+        diccionario.setVariable(nombreVariable, valor);
+        return valor;
+    }
+
+/**
+* Evalúa una expresión COND
+* @param elementos La lista de elementos que define las condiciones y sus resultados
+* @return El resultado de la primera condición verdadera
+* @throws RuntimeException Si la sintaxis de COND es incorrecta
+*/
+    private Object evaluarCondicional(List<LExpression> elementos) {
+        for (int i = 1; i < elementos.size(); i++) {
+            LExpression condicion = elementos.get(i);
+            if (!(condicion instanceof LList)) {
+                throw new RuntimeException("Condición no válida en COND");
+            }
+            List<LExpression> clausula = ((LList) condicion).getLista();
+            if (clausula.size() != 2) {
+                throw new RuntimeException("Cláusula COND debe tener dos elementos");
+            }
+            Object resultadoCondicion = evaluate(clausula.get(0));
+            if (resultadoCondicion instanceof Boolean && (Boolean) resultadoCondicion) {
+                return evaluate(clausula.get(1));
+            }
+        }
+        return null; // Si ninguna condición es verdadera.
+    }
+
+ /**
+* Evalúa un IF
+*
+* @param elementos La lista de elementos que define la condición, el valor si es verdadero y el valor si es falso
+* @return El resultado de evaluar la condición
+* @throws RuntimeException Si la sintaxis de IF es incorrecta
+*/
+    private Object evaluarIf(List<LExpression> elementos) {
+        if (elementos.size() != 4) {
+            throw new RuntimeException("Sintaxis incorrecta para IF");
+        }
+        Object condicion = evaluate(elementos.get(1));
+        if (condicion instanceof Boolean && (Boolean) condicion) {
+            return evaluate(elementos.get(2));
+        } else {
+            return evaluate(elementos.get(3));
+        }
+    }
 }
