@@ -17,12 +17,24 @@ public class LispInterpreter {
 
     public void interpret(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            StringBuilder codigoCompleto = new StringBuilder();
+            int contadorParentesis = 0;
             String linea;
             while ((linea = br.readLine()) != null) {
-                List<String> tokens = tokennator.tokennate(linea);
-                LExpression expresion = convertidor.convertidor(tokens);
-                Object resultado = evaluator.evaluate(expresion);
-                System.out.println("Resultado: " + resultado);
+                codigoCompleto.append(linea).append(" ");
+
+                for(char c : linea.toCharArray()) {
+                    if (c == '(') contadorParentesis++;
+                    if (c == ')') contadorParentesis--;
+                }
+                if(contadorParentesis == 0 && !codigoCompleto.toString().trim().isEmpty()){
+                    List<String> tokens = tokennator.tokennate(codigoCompleto.toString().trim());
+                    LExpression expresion = convertidor.convertidor(tokens);
+                    Object resultado = evaluator.evaluate(expresion);
+                    System.out.println("Resultado: " + resultado);
+                    codigoCompleto.setLength(0);
+                }
+               
             }
         } catch (IOException e) {
             e.printStackTrace();
