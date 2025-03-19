@@ -1,0 +1,2 @@
+(SETQ x 5)
+(fibonacci x)

@@ -29,6 +29,12 @@ public class Evaluator {
         LExpression primerElemento = elementos.get(0);
         if (primerElemento instanceof LSymbol) {
             String operador = ((LSymbol) primerElemento).getSimbolo();
+            if(diccionario.getFuncion(operador) != null){
+                System.out.println("Ejecutando función de usuario: " + operador); 
+                LFuncion funcion = diccionario.getFuncion(operador);
+                return evaluarFuncionUsuario(funcion, elementos.subList(1, elementos.size()));
+            }
+            
             switch (operador) {
                 case "QUOTE":
                     return elementos.get(1);
@@ -51,6 +57,30 @@ public class Evaluator {
         }
         throw new RuntimeException("Lista no evaluable: " + lista);
     }
+
+    private Object evaluarFuncionUsuario(LFuncion funcion, List<LExpression> argumentos) {
+        List<String> parametros = funcion.getEvaluandos();
+    
+        if (parametros.size() != argumentos.size()) {
+            throw new RuntimeException("Número incorrecto de argumentos para la función.");
+        }
+    
+        DiccionarioSD diccionarioTemporal = new DiccionarioSD();
+        for (String variable : diccionario.getTodasLasVariables()) {
+            diccionarioTemporal.setVariable(variable, diccionario.getVariable(variable));
+        }
+        
+
+        for (int i = 0; i < parametros.size(); i++) {
+            diccionarioTemporal.setVariable(parametros.get(i), evaluate(argumentos.get(i)));
+        }
+
+        Evaluator subEvaluador = new Evaluator(diccionarioTemporal);
+        return subEvaluador.evaluate(funcion.getExpresion());
+    
+        
+    }
+    
 
     /**
     * Evalúa una expresión LISP
@@ -87,11 +117,22 @@ public class Evaluator {
         if (elementos.size() < 4) {
             throw new RuntimeException("Sintaxis incorrecta para DEFUN");
         }
-        String nombreFuncion = ((LSymbol) elementos.get(1)).getSimbolo();
-        List<String> parametros = ((LList) elementos.get(2)).getlistaString();
+        LExpression nombreExp = elementos.get(1);
+        if (!(nombreExp instanceof LSymbol)) {
+        throw new RuntimeException("El nombre de la función debe ser un símbolo.");
+        }
+        String nombreFuncion = ((LSymbol) nombreExp).getSimbolo();
+        LExpression parametrosExp = elementos.get(2);
+        if (!(parametrosExp instanceof LList)) {
+        throw new RuntimeException("Los parámetros deben estar en una lista.");
+        }
+
+
+        List<String> parametros = ((LList) parametrosExp).getlistaString();
         LExpression cuerpo = elementos.get(3);
         LFuncion funcion = new LFuncion(parametros, cuerpo);
         diccionario.setFuncion(nombreFuncion, funcion);
+        System.out.println("Función definida correctamente: " + nombreFuncion);
         return nombreFuncion;
     }
 

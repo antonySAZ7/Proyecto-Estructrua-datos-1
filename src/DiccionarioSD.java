@@ -5,6 +5,7 @@ package src;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class DiccionarioSD {
     private Map<String, Object> setVariables = new HashMap<>();
@@ -25,6 +26,17 @@ public class DiccionarioSD {
     public LFuncion getFuncion(String nombre){
         return defunfunciones.getOrDefault(nombre, null);
     }
+
+    public Set<String> getTodasLasVariables() {
+    return setVariables.keySet();
+}
+
+public void imprimirFunciones() {
+    System.out.println("Funciones almacenadas:");
+    for (String clave : defunfunciones.keySet()) {
+        System.out.println("- " + clave);
+    }
+}
 
 
     
