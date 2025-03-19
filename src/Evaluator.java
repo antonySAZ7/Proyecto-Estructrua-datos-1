@@ -1,5 +1,6 @@
 package src;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,8 +52,14 @@ public class Evaluator {
                 case "*":
                 case "/":
                     return evaluarAritmetica(operador, elementos.subList(1, elementos.size()));
+                case "=":
+                case "<":
+                case ">":
+                case "<=":
+                case ">=":
+                    return evaluarComparacion(operador, elementos.subList(1, elementos.size()));
                 default:
-                    throw new RuntimeException("Este operador no se reconoce: " + operador);
+                        throw new RuntimeException("Este operador no se reconoce: " + operador);
             }
         }
         throw new RuntimeException("Lista no evaluable: " + lista);
@@ -238,5 +245,69 @@ public class Evaluator {
             }
         }
         return resultado;
+    }
+
+    /**
+    * Evalúa una comparación entre números (=, <, >, <=, >=)
+    *
+    * @param operador El operador (=, <, >, <=, >=)
+    * @param argumentos Los argumentos de la comparación
+    * @return true o false, dependiendo del resultado de la comparación
+    * @throws RuntimeException Si los argumentos no son números o si la cantidad de argumentos a comparar es menor a 2
+    */
+    private Object evaluarComparacion(String operador, List<LExpression> argumentos) {
+        if (argumentos.size() < 2) {
+            throw new RuntimeException("Se necesitan al menos 2 argumentos para la comparación: " + operador);
+        }
+
+        // Evaluar todos los argumentos y convertirlos a números.
+        List<Double> numeros = new ArrayList<>();
+        for (LExpression arg : argumentos) {
+            Object valor = evaluate(arg);
+            if (!(valor instanceof Double)) {
+                throw new RuntimeException("Los argumentos de la comparación deben ser números: " + operador);
+            }
+            numeros.add((Double) valor);
+        }
+
+        switch (operador) {
+            case "=":
+                for (int i = 1; i < numeros.size(); i++) {
+                    if (!numeros.get(i - 1).equals(numeros.get(i))) {
+                        return false;
+                    }
+                }
+                return true;
+            case "<":
+                for (int i = 1; i < numeros.size(); i++) {
+                    if (numeros.get(i - 1) >= numeros.get(i)) {
+                        return false;
+                    }
+                }
+                return true;
+            case ">":
+                for (int i = 1; i < numeros.size(); i++) {
+                    if (numeros.get(i - 1) <= numeros.get(i)) {
+                        return false;
+                    }
+                }
+                return true;
+            case "<=":
+                for (int i = 1; i < numeros.size(); i++) {
+                    if (numeros.get(i - 1) > numeros.get(i)) {
+                        return false;
+                    }
+                }
+                return true;
+            case ">=":
+                for (int i = 1; i < numeros.size(); i++) {
+                    if (numeros.get(i - 1) < numeros.get(i)) {
+                        return false;
+                    }
+                }
+                return true;
+            default:
+                throw new RuntimeException("este operador de comparacion no se ha reconocido" + operador);
+        }
     }
 }
