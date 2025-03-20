@@ -1,2 +1,5 @@
-(SETQ x 5)
-(fibonacci x)
+(DEFUN fib (n)
+    (IF (< n 2)
+        n
+        (+ (fib (- n 1)) (fib (- n 2)))))
+(fib 10)

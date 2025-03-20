@@ -37,6 +37,10 @@ public void imprimirFunciones() {
         System.out.println("- " + clave);
     }
 }
+public Set<String> getTodasLasFunciones() {
+    return defunfunciones.keySet();
+}
+
 
 
     

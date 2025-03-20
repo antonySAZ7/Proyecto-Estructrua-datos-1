@@ -30,11 +30,14 @@ public class Evaluator {
         LExpression primerElemento = elementos.get(0);
         if (primerElemento instanceof LSymbol) {
             String operador = ((LSymbol) primerElemento).getSimbolo();
+            System.out.println("Funciones disponibles en DiccionarioSD: ");
+            diccionario.imprimirFunciones();
             if(diccionario.getFuncion(operador) != null){
                 System.out.println("Ejecutando función de usuario: " + operador); 
                 LFuncion funcion = diccionario.getFuncion(operador);
                 return evaluarFuncionUsuario(funcion, elementos.subList(1, elementos.size()));
             }
+            
             
             switch (operador) {
                 case "QUOTE":
@@ -58,9 +61,11 @@ public class Evaluator {
                 case "<=":
                 case ">=":
                     return evaluarComparacion(operador, elementos.subList(1, elementos.size()));
-                default:
-                        throw new RuntimeException("Este operador no se reconoce: " + operador);
+                
+                
             }
+            throw new RuntimeException("Este operador no se reconoce: " + operador + 
+            ". Asegúrate de que la función esté bien definida.");
         }
         throw new RuntimeException("Lista no evaluable: " + lista);
     }
@@ -71,10 +76,16 @@ public class Evaluator {
         if (parametros.size() != argumentos.size()) {
             throw new RuntimeException("Número incorrecto de argumentos para la función.");
         }
+
+        
     
         DiccionarioSD diccionarioTemporal = new DiccionarioSD();
         for (String variable : diccionario.getTodasLasVariables()) {
             diccionarioTemporal.setVariable(variable, diccionario.getVariable(variable));
+        }
+
+        for(String funcionNombre : diccionario.getTodasLasFunciones()){
+            diccionarioTemporal.setFuncion(funcionNombre, diccionario.getFuncion(funcionNombre));
         }
         
 
