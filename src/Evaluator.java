@@ -38,7 +38,6 @@ public class Evaluator {
                 return evaluarFuncionUsuario(funcion, elementos.subList(1, elementos.size()));
             }
             
-            
             switch (operador) {
                 case "QUOTE":
                     return elementos.get(1);
@@ -61,11 +60,10 @@ public class Evaluator {
                 case "<=":
                 case ">=":
                     return evaluarComparacion(operador, elementos.subList(1, elementos.size()));
-                
-                
+                default:
+                    throw new RuntimeException("Este operador no se reconoce: " + operador + 
+                    ". Asegúrate de que la función esté bien definida.");
             }
-            throw new RuntimeException("Este operador no se reconoce: " + operador + 
-            ". Asegúrate de que la función esté bien definida.");
         }
         throw new RuntimeException("Lista no evaluable: " + lista);
     }
@@ -76,8 +74,6 @@ public class Evaluator {
         if (parametros.size() != argumentos.size()) {
             throw new RuntimeException("Número incorrecto de argumentos para la función.");
         }
-
-        
     
         DiccionarioSD diccionarioTemporal = new DiccionarioSD();
         for (String variable : diccionario.getTodasLasVariables()) {
@@ -111,6 +107,8 @@ public class Evaluator {
     public Object evaluate(LExpression expression) {
         if (expression instanceof LNumber) {
             return ((LNumber) expression).getValor();
+        } else if (expression instanceof LString) {
+            return ((LString) expression).getValor(); // Manejar strings como valores literales por si es que están dentro de comillas
         } else if (expression instanceof LSymbol) {
             String simbolo = ((LSymbol) expression).getSimbolo();
             Object valor = diccionario.getVariable(simbolo);
@@ -121,7 +119,7 @@ public class Evaluator {
         } else if (expression instanceof LList) {
             return evaluateList((LList) expression);
         }
-        throw new RuntimeException("expresió no válida: " + expression);
+        throw new RuntimeException("expresión no válida: " + expression);
     }
 
     /**
@@ -192,27 +190,28 @@ public class Evaluator {
                 return evaluate(clausula.get(1));
             }
         }
-        return null; // Si ninguna condición es verdadera.
+        return null; 
     }
 
-    /**
-    * Evalúa un IF
-    *
-    * @param elementos La lista de elementos que define la condición, el valor si es verdadero y el valor si es falso
-    * @return El resultado de evaluar la condición
-    * @throws RuntimeException Si la sintaxis de IF es incorrecta
-    */
-    private Object evaluarIf(List<LExpression> elementos) {
-        if (elementos.size() != 4) {
-            throw new RuntimeException("Sintaxis incorrecta para IF");
-        }
-        Object condicion = evaluate(elementos.get(1));
-        if (condicion instanceof Boolean && (Boolean) condicion) {
-            return evaluate(elementos.get(2));
-        } else {
-            return evaluate(elementos.get(3));
-        }
+/**
+* Evalúa un IF
+*
+* @param elementos La lista de elementos que define la condición, el valor si es verdadero y el valor si es falso
+* @return El resultado de evaluar la condición
+* @throws RuntimeException Si la sintaxis de IF es incorrecta
+*/
+private Object evaluarIf(List<LExpression> elementos) {
+    System.out.println("Elementos en IF: " + elementos); // Depuración
+    if (elementos.size() != 4) {
+        throw new RuntimeException("Sintaxis incorrecta para IF");
     }
+    Object condicion = evaluate(elementos.get(1));
+    if (condicion instanceof Boolean && (Boolean) condicion) {
+        return evaluate(elementos.get(2));
+    } else {
+        return evaluate(elementos.get(3));
+    }
+}
 
     /**
     * Evalúa una operación aritmética (+, -, *, /)
