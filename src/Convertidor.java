@@ -18,7 +18,7 @@ public class Convertidor {
             if (tokens.isEmpty()) {
                 throw new IllegalArgumentException("Error en la sintaxis, posiblemente falte un ')'");
             }
-            tokens.remove(0); // Remover el ")"
+            tokens.remove(0); // Remover el parentesis de cierre ")"
             return new LList(expresiones);
         } else if (primero.equals(")")) {
             throw new IllegalArgumentException("Error de sintaxis, paréntesis de cierre inesperado");

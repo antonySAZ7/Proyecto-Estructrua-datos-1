@@ -12,6 +12,8 @@ public class Evaluator {
 
     public Evaluator(DiccionarioSD diccionario) {
         this.diccionario = diccionario;
+        // Definir T como una constante verdadera por si en un cond se nos atraviesa uno
+        this.diccionario.setVariable("T", true);
     }
 
     /**
@@ -186,7 +188,8 @@ public class Evaluator {
                 throw new RuntimeException("Cláusula COND debe tener dos elementos");
             }
             Object resultadoCondicion = evaluate(clausula.get(0));
-            if (resultadoCondicion instanceof Boolean && (Boolean) resultadoCondicion) {
+            if (resultadoCondicion instanceof Boolean && (Boolean) resultadoCondicion || 
+                resultadoCondicion.equals("T")) {
                 return evaluate(clausula.get(1));
             }
         }
@@ -270,7 +273,6 @@ private Object evaluarIf(List<LExpression> elementos) {
             throw new RuntimeException("Se necesitan al menos 2 argumentos para la comparación: " + operador);
         }
 
-        // Evaluar todos los argumentos y convertirlos a números.
         List<Double> numeros = new ArrayList<>();
         for (LExpression arg : argumentos) {
             Object valor = evaluate(arg);

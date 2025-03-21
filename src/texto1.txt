@@ -1,5 +1,6 @@
-(DEFUN fib (n)
-    (IF (< n 2)
-        n
-        (+ (fib (- n 1)) (fib (- n 2)))))
-(fib 10)
+(SETQ x 10)
+
+(COND
+  ((> x 10) "El número es mayor que 10")
+  ((< x 10) "El número es menor que 10")
+  (T "El número es exactamente 10"))
